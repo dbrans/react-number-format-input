@@ -1,0 +1,76 @@
+{
+  "name": "react-number-format-input",
+  "version": "0.2.0",
+  "description": "An input for numbers formatted by Intl.NumberFormat.",
+  "main": "lib/index.js",
+  "jsnext:main": "src/index.js",
+  "scripts": {
+    "clean": "rimraf lib dist coverage",
+    "lint": "eslint src test examples",
+    "test": "mocha 'src/**/*test.js' --compilers js:babel/register --recursive",
+    "test:watch": "npm test -- --watch",
+    "check": "npm run lint && npm run test",
+    "build:lib": "babel src --out-dir lib",
+    "build:umd": "webpack src/index.js dist/react-number-format-input.js --config webpack.config.development.js",
+    "build:umd:min": "webpack src/index.js dist/react-number-format-input.min.js --config webpack.config.production.js",
+    "build": "npm run build:lib && npm run build:umd && npm run build:umd:min",
+    "preversion": "npm run clean && npm run check",
+    "version": "npm run build",
+    "postversion": "git push && git push --tags && npm run clean",
+    "prepublish": "npm run clean && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dbrans/react-number-format-input.git"
+  },
+  "keywords": [
+    "money",
+    "currency",
+    "number",
+    "input",
+    "mask",
+    "intl",
+    "numberformat"
+  ],
+  "author": "dbrans@gmail.com",
+  "license": "MIT",
+  "devDependencies": {
+    "babel": "^5.5.8",
+    "babel-core": "^5.6.18",
+    "babel-eslint": "^4.1.0",
+    "babel-loader": "^5.1.4",
+    "eslint": "^1.2.1",
+    "eslint-config-airbnb": "0.0.8",
+    "eslint-plugin-react": "~3.5.1",
+    "expect": "^1.8.0",
+    "gitbook-cli": "^0.3.4",
+    "intl": "^1.0.1",
+    "isparta": "^3.0.3",
+    "jsdom": "^7.0.2",
+    "karma": "^0.13.14",
+    "karma-cli": "^0.1.1",
+    "karma-mocha": "^0.2.0",
+    "karma-mocha-reporter": "^1.1.1",
+    "karma-phantomjs-launcher": "^0.2.1",
+    "karma-sourcemap-loader": "^0.3.6",
+    "karma-webpack": "^1.7.0",
+    "mocha": "^2.2.5",
+    "phantomjs": "^1.9.18",
+    "phantomjs-polyfill": "0.0.1",
+    "react-addons-test-utils": "^0.14.1",
+    "rimraf": "^2.3.4",
+    "webpack": "^1.9.6"
+  },
+  "npmName": "react-number-format-input",
+  "npmFileMap": [
+    {
+      "basePath": "/dist/",
+      "files": [
+        "*.js"
+      ]
+    }
+  ],
+  "peerDependencies": {
+    "react": "^0.14.0"
+  }
+}
