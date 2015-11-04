@@ -65,21 +65,21 @@ NumberFormatInput.PropTypes = {
 };
 
 NumberFormatInput.defaultProps = {
-  value: 0,
+  allowNullValue: false,
+  maxlength: undefined,
   numberFormat: new Intl.NumberFormat('en-US', {}),
   onChange: () => {},
-  maxlength: undefined,
-  allowNull: false,
+  value: 0,
 };
 
 NumberFormatInput.propTypes = {
+  allowNullValue: PropTypes.bool,
   maxlength: PropTypes.number,
-  value: PropTypes.number,
-  onChange: PropTypes.func,
-
   numberFormat: PropTypes.shape({
     format: PropTypes.func.isRequired,
     resolvedOptions: PropTypes.func.isRequired,
   }),
+  onChange: PropTypes.func,
+  value: PropTypes.number,
 };
 

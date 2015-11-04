@@ -1,4 +1,4 @@
-import NumberFormatInput from '../lib';
+import NumberFormatInput from '../src';
 import React, {Component, PropTypes} from 'react';
 
 const simpleFormat = new Intl.NumberFormat('en-US');
