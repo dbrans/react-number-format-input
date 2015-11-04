@@ -2,8 +2,7 @@
 /.*/
 /_book/
 /coverage/
-/docs/
-/examples/
+/demo/
 /test/
 /.eslint*
 /.flowconfig
@@ -12,3 +11,4 @@
 /.travis.yml
 /book.json
 /webpack.*
+/**/__tests__

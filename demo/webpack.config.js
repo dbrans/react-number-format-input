@@ -24,6 +24,11 @@ module.exports = {
       exclude: /node_modules/,
       //include: __dirname
     }]
-  }
+  },
+  resolve: {
+    alias: {
+      react: path.resolve('./node_modules/react'),
+    },
+  },
 };
 

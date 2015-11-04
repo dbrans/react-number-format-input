@@ -1,6 +1,6 @@
 [ignore]
 .*/lib
-.*/test
+/**/__tests__
 
 [include]
 
