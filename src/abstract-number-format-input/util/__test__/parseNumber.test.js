@@ -1,12 +1,12 @@
 import expect from 'expect';
-import parseNumber, {NumberFormatError} from './../parseNumber';
+import parseNumber from './../parseNumber';
 
 const defaultDecimalChar = '.';
 
 describe('parse', () => {
   it('throws for empty values', () => {
     ['', null, undefined].forEach(val => {
-      expect(parseNumber.bind(null, val, defaultDecimalChar)).toThrow(NumberFormatError);
+      expect(parseNumber.bind(null, val, defaultDecimalChar)).toThrow('Invariant');
     });
   });
 
@@ -50,7 +50,7 @@ describe('parse', () => {
 
   it('throws when magnitude is unparsable', () => {
     ['-', '.', '-.', '3-3', '3.3-'].forEach(val => {
-      expect(parseNumber.bind(null, val, defaultDecimalChar)).toThrow(NumberFormatError);
+      expect(parseNumber.bind(null, val, defaultDecimalChar)).toThrow('Invariant');
     });
   });
 

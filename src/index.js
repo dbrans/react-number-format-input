@@ -1,8 +1,6 @@
 import React, {Component, PropTypes} from 'react';
-import handleKeyDown from './handleKeyDown';
-import handleKeyPress from './handleKeyPress';
 import {getSelection, setSelection} from './domElementSelection';
-import formattedNumber from './util/formattedNumber';
+import abstractNumberInput from './abstract-number-format-input/index';
 
 export default class NumberFormatInput extends Component {
   componentDidUpdate() {
@@ -10,13 +8,17 @@ export default class NumberFormatInput extends Component {
     delete this.queueSelection;
   }
 
-  handleKeyEvent(handler, e) {
-    const charCode = e.which || e.charCode || e.keyCode;
-    const value = this.refs.input.value;
-    const selection = getSelection(this.refs.input);
-    const {maxlength, numberFormat: numberFormat} = this.props;
+  getAbstractNumInput() {
+    const {numberFormat, allowNull} = this.props;
+    return abstractNumberInput(numberFormat, allowNull);
+  }
 
-    const next = handler({charCode, value, selection, maxlength, numberFormat});
+  handleKeyEvent(handlerName, e) {
+    const charCode = e.which || e.charCode || e.keyCode;
+    const {value} = this.refs.input;
+    const selection = getSelection(this.refs.input);
+    const {maxlength} = this.props;
+    const next = this.getAbstractNumInput()[handlerName]({charCode, value, selection, maxlength});
 
     this.notifyChange(next.value);
 
@@ -27,17 +29,16 @@ export default class NumberFormatInput extends Component {
     }
   }
 
-  notifyChange(numberStr) {
-    const {value, onChange, numberFormat} = this.props;
-    const nextValue = formattedNumber(numberFormat).parse(numberStr);
+  notifyChange(nextValue) {
+    const {value, onChange} = this.props;
     if (nextValue !== value) onChange(nextValue);
   }
 
   eventHandlers() {
     return this._eventHandlers || (this._eventHandlers = {
 
-      onKeyPress: this.handleKeyEvent.bind(this, handleKeyPress),
-      onKeyDown: this.handleKeyEvent.bind(this, handleKeyDown),
+      onKeyPress: this.handleKeyEvent.bind(this, 'handleKeyPress'),
+      onKeyDown: this.handleKeyEvent.bind(this, 'handleKeyDown'),
       onFocus: () => this.setState({hasFocus: true}),
       onBlur: () => this.setState({hasFocus: false}),
       onChange: () => {}, // Changes are detected via key events.
@@ -45,10 +46,10 @@ export default class NumberFormatInput extends Component {
   }
 
   render() {
-    const {value, numberFormat} = this.props;
-    const inputValue = formattedNumber(numberFormat).format(value);
+    const {value, numberFormat, allowNull, ...inputProps} = this.props;
+    const inputValue = this.getAbstractNumInput().format(value);
     return (
-        <input ref="input" type="text" {...this.props} value={inputValue} {...this.eventHandlers()}/>
+        <input ref="input" type="text" {...inputProps} value={inputValue} {...this.eventHandlers()}/>
     );
   }
 }
@@ -65,16 +66,18 @@ NumberFormatInput.PropTypes = {
 };
 
 NumberFormatInput.defaultProps = {
-  allowNullValue: false,
+  // If true, we allow a null value and represent it as an empty input.
+  // Clearing the input will call onChange with a value of null.
+  allowNull: false,
   maxlength: undefined,
   numberFormat: new Intl.NumberFormat('en-US', {}),
   onChange: () => {},
-  value: 0,
 };
 
 NumberFormatInput.propTypes = {
-  allowNullValue: PropTypes.bool,
+  allowNull: PropTypes.bool,
   maxlength: PropTypes.number,
+  // An instance of Intl.NumberFormat.
   numberFormat: PropTypes.shape({
     format: PropTypes.func.isRequired,
     resolvedOptions: PropTypes.func.isRequired,

@@ -24,5 +24,12 @@ export default [
     description: 'Percent',
     numberFormat: new Intl.NumberFormat('en-US', { style: 'percent'}),
     defaultValue: 0.22,
-  }
+  },
+  {
+    description: 'allowNull=true',
+    numberFormat: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }),
+    allowNull: true,
+    placeholder: 'Empty is null',
+    defaultValue: null,
+  },
 ];

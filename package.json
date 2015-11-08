@@ -72,5 +72,8 @@
   ],
   "peerDependencies": {
     "react": "^0.14.0"
+  },
+  "dependencies": {
+    "invariant": "^2.1.2"
   }
 }
