@@ -9,8 +9,7 @@ export default class NumberFormatInput extends Component {
   }
 
   getAbstractNumInput() {
-    const {numberFormat, allowNull} = this.props;
-    return abstractNumberInput(numberFormat, allowNull);
+    return abstractNumberInput(this.props.numberFormat);
   }
 
   handleKeyEvent(handlerName, e) {
@@ -46,7 +45,7 @@ export default class NumberFormatInput extends Component {
   }
 
   render() {
-    const {value, numberFormat, allowNull, ...inputProps} = this.props;
+    const {value, numberFormat, ...inputProps} = this.props;
     const inputValue = this.getAbstractNumInput().format(value);
     return (
         <input ref="input" type="text" {...inputProps} value={inputValue} {...this.eventHandlers()}/>
@@ -62,20 +61,15 @@ NumberFormatInput.PropTypes = {
   }),
   onChange: PropTypes.func,
   maxlength: PropTypes.number,
-  allowNull: PropTypes.bool,
 };
 
 NumberFormatInput.defaultProps = {
-  // If true, we allow a null value and represent it as an empty input.
-  // Clearing the input will call onChange with a value of null.
-  allowNull: false,
   maxlength: undefined,
   numberFormat: new Intl.NumberFormat('en-US', {}),
   onChange: () => {},
 };
 
 NumberFormatInput.propTypes = {
-  allowNull: PropTypes.bool,
   maxlength: PropTypes.number,
   // An instance of Intl.NumberFormat.
   numberFormat: PropTypes.shape({

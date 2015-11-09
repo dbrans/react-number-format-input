@@ -22,7 +22,7 @@ function isNegative(formattedNumber) {
   return !!formattedNumber.match(/-/);
 }
 
-export default function formattedNumberReducer(numberFormat, allowNull = false) {
+export default function formattedNumberReducer(numberFormat) {
   const {maximumFractionDigits, style} = numberFormat.resolvedOptions();
   const allowsFractionDigits = maximumFractionDigits > 0;
   const isPercent = style === 'percent';
@@ -32,7 +32,7 @@ export default function formattedNumberReducer(numberFormat, allowNull = false) 
   const fractionPlaceholder = allowsFractionDigits ? (decimalChar + Array(maximumFractionDigits + 1).join('0')) : null;
 
   function parse(formattedNumber) {
-    if (formattedNumber === '' && allowNull) return null;
+    if (formattedNumber === '') return null;
     const number = parseNumber(formattedNumber, decimalChar);
     return isPercent ? number / 100 : number;
   }
@@ -47,10 +47,7 @@ export default function formattedNumberReducer(numberFormat, allowNull = false) 
   }
 
   function format(number) {
-    if (number === null) {
-      invariant(allowNull, `Got a null value but null is not allowed`);
-      return '';
-    }
+    if (number === null) return '';
     invariant(Number.isFinite(number), `Illegal number value: ${JSON.stringify(number)}`);
     return addTrailingZeros(numberFormat.format(number));
   }
@@ -68,7 +65,7 @@ export default function formattedNumberReducer(numberFormat, allowNull = false) 
 
   function fixupSplice(editedStr) {
     const _temp = justDigits(editedStr);
-    if (!_temp.length && allowNull) return null;
+    if (!_temp.length) return null;
     const digits = _temp.length ? _temp : '0';
     const digitsWithDecimal = placeDecimalInDigits(digits);
     const sign = isNegative(editedStr) ? '-' : '';
@@ -104,9 +101,8 @@ export default function formattedNumberReducer(numberFormat, allowNull = false) 
     if (charCode !== DELETE && charCode !== BACKSPACE) return {selection: null, value: parse(value)};
     let {start, end} = selection;
     if (start === end) {
-      // No significant digits, when user presses DELETE or backspace we clear the input if
-      // allowNull.
-      if (parse(value) === 0 && allowNull) return {selection: {start: 0, end: 0}, value: null};
+      // No significant digits, when user presses DELETE or backspace we clear the input.
+      if (parse(value) === 0) return {selection: {start: 0, end: 0}, value: null};
       // No selection: backspace and delete behave differently.
       const pos =
           charCode === DELETE ? indexOfDigit(value, start, 1) : indexOfDigit(value, start - 1, -1);

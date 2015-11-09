@@ -26,10 +26,8 @@ export default [
     defaultValue: 0.22,
   },
   {
-    description: 'allowNull=true',
+    description: 'An empty input has value of null',
     numberFormat: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }),
-    allowNull: true,
-    placeholder: 'Empty is null',
     defaultValue: null,
   },
 ];

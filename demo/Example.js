@@ -1,4 +1,4 @@
-import NumberFormatInput, {FORBID_EMPTY_VALUE} from '../src';
+import NumberFormatInput from '../src';
 import React, {Component, PropTypes} from 'react';
 
 const simpleFormat = new Intl.NumberFormat('en-US');
@@ -9,9 +9,10 @@ function format(allowNull, value) {
 
 export default class Example extends Component {
   render() {
-    const {description, numberFormat, allowNull, placeholder, defaultValue = 1234.56} = this.props;
+    const {description, numberFormat, allowNull, defaultValue = 1234.56} = this.props;
     const {value} = this.state || (this.state = {value: defaultValue});
     const onChange = (nextValue) => this.setState({value: nextValue});
+    const placeholder = 'Empty is null';
     return (
         <div className="example">
           <p>{description}</p>

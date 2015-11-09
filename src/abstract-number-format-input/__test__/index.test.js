@@ -7,11 +7,7 @@ const simpleFormatted = formattedNumber(numberFormat);
 const simpleAllowNull = formattedNumber(numberFormat, true);
 
 describe('format', () => {
-  it('throws if value is null and allowNull is not set', () => {
-    expect(simpleFormatted.format.bind(null, null)).toThrow('Invariant');
-  });
-
-  it('formats null as empty string if allowNull is set', () => {
+  it('formats null as empty string', () => {
     expect(simpleAllowNull.format(null)).toBe('');
   });
 
@@ -35,7 +31,7 @@ describe('splice', () => {
       expect(simpleFormatted.splice( '1.23', 0, 3)).toBe(0.03);
     });
     it('works 3', () => {
-      expect(simpleFormatted.splice( '1.23', 0, 4)).toBe(0.00);
+      expect(simpleFormatted.splice( '1.23', 0, 4)).toBe(null);
     });
     it('works 3b', () => {
       expect(simpleFormatted.splice( '11.23', 0, 1)).toBe(1.23);
@@ -43,10 +39,7 @@ describe('splice', () => {
     it('works 4', () => {
       expect(simpleFormatted.splice( '-1.23', 1, 2)).toBe(-0.23);
     });
-    it('converts no digits to 0 by default', () => {
-      expect(simpleFormatted.splice( '$1.23', 1, 5)).toBe(0.00);
-    });
-    it('converts no digits to null if allowNull is true', () => {
+    it('converts no digits to null', () => {
       expect(simpleAllowNull.splice( '$1.23', 1, 5)).toBe(null);
     });
   });

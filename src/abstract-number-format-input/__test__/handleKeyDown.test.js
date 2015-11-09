@@ -7,9 +7,7 @@ const numberFormat = new Intl.NumberFormat('en-US', {
   maximumFractionDigits: 2,
 });
 
-const abstractNumInput = abstractNumberInput(numberFormat);
-
-const abstractNumInputAllowNull = abstractNumberInput(numberFormat, true);
+const abstractNumInput = abstractNumberInput(numberFormat, true);
 
 describe('handleKeyDown', () => {
   function position(idx) {
@@ -116,19 +114,8 @@ describe('handleKeyDown', () => {
         expect(selection).toEqual(position(4));
       });
 
-      it('BACKSPACE with value of zero remains zero by default', () => {
+      it('BACKSPACE with value of zero clears the input', () => {
         const {value, selection} = abstractNumInput.handleKeyDown({
-          charCode: BACKSPACE,
-          selection: position(4),
-          value: '0.00',
-        });
-
-        expect(value).toBe(0);
-        expect(selection).toEqual(position(4));
-      });
-
-      it('BACKSPACE with value of zero clears the input if allowNull', () => {
-        const {value, selection} = abstractNumInputAllowNull.handleKeyDown({
           charCode: BACKSPACE,
           selection: position(5),
           value: '0.00',
@@ -206,19 +193,8 @@ describe('handleKeyDown', () => {
         expect(selection).toEqual(position(1));
       });
 
-      it('DELETE with value of zero remains zero by default', () => {
+      it('DELETE with value of zero clears the input', () => {
         const {value, selection} = abstractNumInput.handleKeyDown({
-          charCode: DELETE,
-          selection: position(0),
-          value: '0.00',
-        });
-
-        expect(value).toBe(0);
-        expect(selection).toEqual(position(1));
-      });
-
-      it('DELETE with value of zero clears the input if allowNull', () => {
-        const {value, selection} = abstractNumInputAllowNull.handleKeyDown({
           charCode: DELETE,
           selection: position(0),
           value: '0.00',
@@ -247,7 +223,7 @@ describe('handleKeyDown', () => {
           value: '12.34',
         });
 
-        expect(value).toBe(0.00);
+        expect(value).toBe(null);
       });
 
       it('keeps decimal', () => {
