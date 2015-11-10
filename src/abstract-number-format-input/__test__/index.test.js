@@ -7,13 +7,15 @@ const simpleFormatted = formattedNumber(numberFormat);
 const simpleAllowNull = formattedNumber(numberFormat, true);
 
 describe('format', () => {
-  it('formats null as empty string', () => {
-    expect(simpleAllowNull.format(null)).toBe('');
+  it('formats null, undefined, empty string as empty string', () => {
+    [undefined, null, '', undefined].forEach(value =>
+        expect(simpleAllowNull.format(value)).toBe('')
+    );
   });
 
   it('Throws if value is not a finite number', () => {
-    [false, 'booya', '123', '', undefined].forEach(value =>
-            expect(simpleAllowNull.format.bind(null, value)).toThrow('Invariant')
+    [false, 'booya', '123', true].forEach(value =>
+        expect(simpleAllowNull.format.bind(null, value)).toThrow('Invariant')
     );
   });
 

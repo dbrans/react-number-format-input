@@ -47,7 +47,7 @@ export default function formattedNumberReducer(numberFormat) {
   }
 
   function format(number) {
-    if (number === null) return '';
+    if (number === null || number === undefined || number === '') return '';
     invariant(Number.isFinite(number), `Illegal number value: ${JSON.stringify(number)}`);
     return addTrailingZeros(numberFormat.format(number));
   }
