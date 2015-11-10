@@ -9,14 +9,19 @@ const simpleAllowNull = formattedNumber(numberFormat, true);
 describe('format', () => {
   it('formats null, undefined, empty string as empty string', () => {
     [undefined, null, '', undefined].forEach(value =>
-        expect(simpleAllowNull.format(value)).toBe('')
+            expect(simpleAllowNull.format(value)).toBe('')
     );
   });
 
-  it('Throws if value is not a finite number', () => {
-    [false, 'booya', '123', true].forEach(value =>
-        expect(simpleAllowNull.format.bind(null, value)).toThrow('Invariant')
-    );
+  it('parses strings before formatting them', () => {
+    expect(simpleAllowNull.format('123')).toBe('123.00');
+  });
+
+  it('Throws if value is not a finite number or string number', () => {
+    // TODO: '2booya2' should throw.
+    [false, '2-2', true].forEach(value => {
+      expect(simpleAllowNull.format.bind(null, value)).toThrow('Invariant');
+    });
   });
 
   it('Formats a finite number to a string using numberFormat', () => {
@@ -86,4 +91,3 @@ describe('flipSign', () => {
     expect(simpleFormatted.flipSign( '-1.23')).toBe(1.23);
   });
 });
-

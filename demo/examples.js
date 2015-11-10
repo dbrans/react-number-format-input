@@ -18,7 +18,7 @@ export default [
   {
     description: 'Japanese yen doesn\'t use a minor unit',
     numberFormat: new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY' }),
-    defaultValue: -123456,
+    defaultValue: '-1234',
   },
   {
     description: 'Percent',
