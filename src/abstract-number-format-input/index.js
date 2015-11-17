@@ -12,6 +12,8 @@ function indexOfDigit(str, start, direction) {
 }
 
 const BACKSPACE = 8;
+const TAB = 9;
+const ENTER = 13;
 const DELETE = 46;
 
 function justDigits(str) {
@@ -22,7 +24,7 @@ function isNegative(formattedNumber) {
   return !!formattedNumber.match(/-/);
 }
 
-export default function formattedNumberReducer(numberFormat) {
+export default function createAbstractNumberFormatInput(numberFormat) {
   const {maximumFractionDigits, style} = numberFormat.resolvedOptions();
   const allowsFractionDigits = maximumFractionDigits > 0;
   const isPercent = style === 'percent';
@@ -81,25 +83,60 @@ export default function formattedNumberReducer(numberFormat) {
     return -parse(formattedNumber);
   }
 
+  function ensureLength(nextValue, oldValue, maxlength) {
+    // Revert to oldValue if nextValue does not fit in input's maxlength.
+    // We force nextValue to be negative to ensure there's always room for a minus sign.
+    return format(-Math.abs(nextValue)).length > maxlength ? oldValue : nextValue;
+  }
+
+  // TODO(dbrans): Needs tests.
+  function handlePaste({pasteText, selection, value, maxlength}) {
+    const {start, end} = selection;
+    const [preventDefault, stopPropagation] = [true, true];
+    const nextValue = ensureLength(splice(value, start, end - start, pasteText), parse(value), maxlength);
+    const position = nextPosition({start, end}, value, format(nextValue));
+    return {selection: {start: position, end: position}, value: nextValue, preventDefault, stopPropagation};
+  }
+
+  // TODO(dbrans): Needs tests.
+  function handleCut({selection, value}) {
+    const {start, end} = selection;
+    const [preventDefault, stopPropagation] = [true, false];
+    const nextValue = splice(value, start, end - start);
+    const position = nextPosition({start, end}, value, format(nextValue));
+    const clipboardText = value.slice(start, end);
+    return {selection: {start: position, end: position}, value: nextValue, preventDefault, stopPropagation, clipboardText};
+  }
+
   function handleKeyPress({charCode, selection, value, maxlength}) {
     const {start, end} = selection;
     const char = String.fromCharCode(charCode);
-    let nextValue = parse(value);
+    const oldValue = parse(value);
+    let nextValue = oldValue;
+    let [preventDefault, stopPropagation] = [false, false];
 
-    if (char === '-') nextValue = flipSign(value);
-    else if (char === '+') nextValue = isNegative(value) ? flipSign(value) : parse(value);
-    else if (char.match(/\d/)) nextValue = splice(value, start, end - start, char);
-
-    // Revert if nextValue does not fit in input's maxlength.
-    if (format(nextValue).length > maxlength) nextValue = parse(value);
-
+    if (char === '-' || char === '+') {
+      if (char === '-' || char === '+' && isNegative(value)) nextValue = flipSign(value);
+      [preventDefault, stopPropagation] = [true, true];
+    } else if (char.match(/\d/)) { // DIGIT
+      nextValue = ensureLength(splice(value, start, end - start, char), oldValue, maxlength);
+      [preventDefault, stopPropagation] = [true, true];
+    } else if (charCode === ENTER || charCode === TAB) {
+      // Allow ENTER and TAB event to do its thing on a form (submit and change focus).
+      [preventDefault, stopPropagation] = [false, false];
+    } else {
+      // Any other key preventDefault but don't stopPropagation.
+      [preventDefault, stopPropagation] = [true, false];
+    }
     const position = nextPosition({start, end}, value, format(nextValue));
 
-    return {selection: {start: position, end: position}, value: nextValue};
+    return {selection: {start: position, end: position}, value: nextValue, preventDefault, stopPropagation};
   }
 
   function handleKeyDown({charCode, selection, value}) {
-    if (charCode !== DELETE && charCode !== BACKSPACE) return {selection: null, value: parse(value)};
+    const passThrough = {selection, value: parse(value), preventDefault: false, stopPropagation: false};
+    if (charCode !== DELETE && charCode !== BACKSPACE) return passThrough;
+
     let {start, end} = selection;
     if (start === end) {
       // No significant digits, when user presses DELETE or backspace we clear the input.
@@ -116,9 +153,11 @@ export default function formattedNumberReducer(numberFormat) {
     return {
       selection: {start: position, end: position},
       value: nextValue,
+      stopPropagation: true,
+      preventDefault: true,
     };
   }
 
 
-  return { parse, format, splice, flipSign, isNegative, handleKeyDown, handleKeyPress };
+  return { parse, format, splice, flipSign, isNegative, handleKeyDown, handleKeyPress, handleCut, handlePaste};
 }

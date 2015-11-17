@@ -2,6 +2,12 @@ import expect from 'expect';
 import abstractNumberInput from '../index';
 const DELETE = 46;
 const BACKSPACE = 8;
+const ENTER = 13;
+const LEFT_ARROW = 37;
+function digit(zeroToNine) {
+  return 48 + zeroToNine;
+}
+
 
 const numberFormat = new Intl.NumberFormat('en-US', {
   maximumFractionDigits: 2,
@@ -13,6 +19,27 @@ describe('handleKeyDown', () => {
   function position(idx) {
     return {start: idx, end: idx};
   }
+
+  describe('preventDefault and stopPropagation', () => {
+    const selection = position(2);
+    const value = '14.23';
+
+    it('returns true values for BACKSPACE or DELETE', () => {
+      [BACKSPACE, DELETE].forEach(charCode => {
+        const {stopPropagation, preventDefault} = abstractNumInput.handleKeyDown({ charCode, selection, value });
+        expect(stopPropagation).toBe(true);
+        expect(preventDefault).toBe(true);
+      });
+    });
+
+    it('returns false for other keys', () => {
+      [ENTER, LEFT_ARROW, digit(3)].forEach(charCode => {
+        const {stopPropagation, preventDefault} = abstractNumInput.handleKeyDown({ charCode, selection, value });
+        expect(stopPropagation).toBeFalsy();
+        expect(preventDefault).toBeFalsy();
+      });
+    });
+  });
 
   describe('point selection', () => {
     it('handles BACKSPACE at start', () => {

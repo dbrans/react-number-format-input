@@ -1,10 +1,13 @@
 import expect from 'expect';
 import abstractNumberInput from '../index';
 
+const TAB = 9;
+const ENTER = 13;
 const MINUS = 45;
 const PLUS = 43;
-function code(digit) {
-  return 48 + digit;
+
+function digit(zeroToNine) {
+  return 48 + zeroToNine;
 }
 
 const abstractNumInput = abstractNumberInput(new Intl.NumberFormat('en-US', {
@@ -17,7 +20,26 @@ describe('handleKeyPress', () => {
     return {start: idx, end: idx};
   }
 
-  describe('minus key', () => {
+  describe('stopPropagation and preventDefault', () => {
+    it('both falsy for ENTER and TAB', () => {
+      [ENTER, TAB].forEach(charCode => {
+        const {stopPropagation, preventDefault} =
+            abstractNumInput.handleKeyPress({ charCode, selection: position(2), value: '1.34'});
+        expect(stopPropagation).toBeFalsy();
+        expect(preventDefault).toBeFalsy();
+      });
+    });
+
+    it('both true for MINUS, PLUS, and digit', () => {
+      [MINUS, PLUS, digit(2)].forEach(charCode => {
+        const {stopPropagation, preventDefault} =
+            abstractNumInput.handleKeyPress({ charCode, selection: position(2), value: '1.34'});
+        expect(stopPropagation).toBe(true);
+        expect(preventDefault).toBe(true);
+      });
+    });
+  });
+  describe('MINUS', () => {
     const charCode = MINUS;
 
     it('returns negative when input is positive', () => {
@@ -39,7 +61,7 @@ describe('handleKeyPress', () => {
     });
   });
 
-  describe('plus key', () => {
+  describe('PLUS', () => {
     const charCode = PLUS;
 
     it('returns positive when input is positive', () => {
@@ -59,26 +81,26 @@ describe('handleKeyPress', () => {
 
   it('handles a digit', () => {
     const {value} =
-        abstractNumInput.handleKeyPress({charCode: code(2), selection: position(0), value: '-1.34'});
+        abstractNumInput.handleKeyPress({charCode: digit(2), selection: position(0), value: '-1.34'});
     expect(value).toBe(-21.34);
   });
 
   it('handles a fraction digit', () => {
     const {value} =
-        abstractNumInput.handleKeyPress({charCode: code(2), selection: position(2), value: '1.34'});
+        abstractNumInput.handleKeyPress({charCode: digit(2), selection: position(2), value: '1.34'});
     expect(value).toBe(12.34);
   });
 
   it('handles a fraction digit breaks a thousand', () => {
     const {value, selection} =
-        abstractNumInput.handleKeyPress({charCode: code(2), selection: position(5), value: '163.45'});
+        abstractNumInput.handleKeyPress({charCode: digit(2), selection: position(5), value: '163.45'});
     expect(value).toBe(1634.25);
     expect(selection).toEqual(position(7));
   });
 
   it('handles a fraction digit 2', () => {
     const {value, selection} =
-        abstractNumInput.handleKeyPress({charCode: code(2), selection: position(4), value: '1.63'});
+        abstractNumInput.handleKeyPress({charCode: digit(2), selection: position(4), value: '1.63'});
     expect(value).toBe(16.32);
     expect(selection).toEqual(position(5));
   });
@@ -86,7 +108,7 @@ describe('handleKeyPress', () => {
   describe('range selection', () => {
     it('handles a digit', () => {
       const {value, selection} =
-          abstractNumInput.handleKeyPress({charCode: code(2), selection: {start: 0, end: 4}, value: '1.34'});
+          abstractNumInput.handleKeyPress({charCode: digit(2), selection: {start: 0, end: 4}, value: '1.34'});
       expect(value).toBe(0.02);
       expect(selection).toEqual(position(4));
     });
@@ -95,35 +117,35 @@ describe('handleKeyPress', () => {
   describe('maxlength', () => {
     it('enough room', () => {
       const {value} =
-          abstractNumInput.handleKeyPress({charCode: code(2), selection: position(0), value: '1.34',
-            maxlength: 5});
+          abstractNumInput.handleKeyPress({charCode: digit(2), selection: position(0), value: '1.34',
+            maxlength: 6}); // Leave extra character for a negative.
 
       expect(value).toBe(21.34);
     });
 
-    it('not enough room', () => {
+    it('not enough room if you leave room for a negative sign', () => {
       const {value} =
-          abstractNumInput.handleKeyPress({charCode: code(2), selection: position(0), value: '1.34',
-            maxlength: 4});
+          abstractNumInput.handleKeyPress({charCode: digit(2), selection: position(0), value: '1.34',
+            maxlength: 5});
 
       expect(value).toBe(1.34);
     });
 
     it('not enough room but leading zero', () => {
       const {value} =
-          abstractNumInput.handleKeyPress({charCode: code(2), selection: position(1),
-            value: '0.34', maxlength: 4});
+          abstractNumInput.handleKeyPress({charCode: digit(2), selection: position(2),
+            value: '-0.34', maxlength: 5});
 
-      expect(value).toBe(2.34);
+      expect(value).toBe(-2.34);
     });
 
     it('not enough room but selection has digit', () => {
-      const mySelection = {start: 0, end: 1};
+      const mySelection = {start: 1, end: 2};
       const {value} =
-          abstractNumInput.handleKeyPress({charCode: code(2), selection: mySelection, value: '1.34',
-            maxlength: 4});
+          abstractNumInput.handleKeyPress({charCode: digit(2), selection: mySelection, value: '-1.34',
+            maxlength: 5});
 
-      expect(value).toBe(2.34);
+      expect(value).toBe(-2.34);
     });
   });
 });

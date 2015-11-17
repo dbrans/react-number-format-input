@@ -4,8 +4,8 @@ import abstractNumberInput from './abstract-number-format-input/index';
 
 export default class NumberFormatInput extends Component {
   componentDidUpdate() {
-    if (this.queueSelection) setSelection(this.refs.input, this.queueSelection);
-    delete this.queueSelection;
+    if (this.nextSelection) setSelection(this.refs.input, this.nextSelection);
+    delete this.nextSelection;
   }
 
   getAbstractNumInput() {
@@ -14,32 +14,26 @@ export default class NumberFormatInput extends Component {
 
   handleKeyEvent(handlerName, e) {
     const charCode = e.which || e.charCode || e.keyCode;
-    const {value} = this.refs.input;
+    const pasteText = e.clipboardData && e.clipboardData.getData('text') || '';
+    const {value: inputValue} = this.refs.input;
     const selection = getSelection(this.refs.input);
-    const {maxlength} = this.props;
-    const next = this.getAbstractNumInput()[handlerName]({charCode, value, selection, maxlength});
+    const {maxlength, value, onChange} = this.props;
 
-    this.notifyChange(next.value);
+    const next = this.getAbstractNumInput()[handlerName]({charCode, value: inputValue, selection, maxlength, pasteText});
 
-    if (next.selection) {
-      e.preventDefault();
-      e.stopPropagation();
-      this.queueSelection = next.selection;
-    }
-  }
-
-  notifyChange(nextValue) {
-    const {value, onChange} = this.props;
-    if (nextValue !== value) onChange(nextValue);
+    if (next.value !== value) onChange(next.value);
+    this.nextSelection = next.selection;
+    if (next.preventDefault) e.preventDefault();
+    if (next.stopPropagation) e.stopPropagation();
+    if (next.clipboardText) e.clipboardData.setData('text', next.clipboardText);
   }
 
   eventHandlers() {
     return this._eventHandlers || (this._eventHandlers = {
-
       onKeyPress: this.handleKeyEvent.bind(this, 'handleKeyPress'),
       onKeyDown: this.handleKeyEvent.bind(this, 'handleKeyDown'),
-      onFocus: () => this.setState({hasFocus: true}),
-      onBlur: () => this.setState({hasFocus: false}),
+      onCut: this.handleKeyEvent.bind(this, 'handleCut'),
+      onPaste: this.handleKeyEvent.bind(this, 'handlePaste'),
       onChange: () => {}, // Changes are detected via key events.
     });
   }
@@ -77,6 +71,6 @@ NumberFormatInput.propTypes = {
     resolvedOptions: PropTypes.func.isRequired,
   }),
   onChange: PropTypes.func,
-  value: PropTypes.number,
+  value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 
