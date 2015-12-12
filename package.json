@@ -74,6 +74,7 @@
     "react": "^0.14.0"
   },
   "dependencies": {
-    "invariant": "^2.1.2"
+    "invariant": "^2.1.2",
+    "lodash.isfinite": "^3.3.1"
   }
 }
