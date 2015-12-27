@@ -16,7 +16,7 @@ export default class Example extends Component {
     return (
         <div className="example">
           <p>{description}</p>
-          <NumberFormatInput {...{placeholder, value, numberFormat, onChange, allowNull}}/>
+          <NumberFormatInput {...{placeholder, value, numberFormat, onChange}}/>
           value: <span className="value">{format(allowNull, value)}</span>
         </div>
     );

@@ -29,13 +29,24 @@ export default class NumberFormatInput extends Component {
   }
 
   eventHandlers() {
-    return this._eventHandlers || (this._eventHandlers = {
-      onKeyPress: this.handleKeyEvent.bind(this, 'handleKeyPress'),
-      onKeyDown: this.handleKeyEvent.bind(this, 'handleKeyDown'),
-      onCut: this.handleKeyEvent.bind(this, 'handleCut'),
-      onPaste: this.handleKeyEvent.bind(this, 'handlePaste'),
-      onChange: () => {}, // Changes are detected via key events.
-    });
+    if (!this._eventHandlers) {
+      this._eventHandlers = {
+        onKeyPress: this.handleKeyEvent.bind(this, 'handleKeyPress'),
+        onKeyDown: this.handleKeyEvent.bind(this, 'handleKeyDown'),
+        onCut: this.handleKeyEvent.bind(this, 'handleCut'),
+        onPaste: this.handleKeyEvent.bind(this, 'handlePaste'),
+        onChange: () => {}, // Changes are detected via key events.
+      };
+
+      Object.keys(this._eventHandlers).forEach(key => {
+        const handler = this._eventHandlers[key];
+        this._eventHandlers[key] = (...args) => {
+          handler(...args);
+          if (this.props[key]) this.props[key](...args);
+        };
+      });
+    }
+    return this._eventHandlers;
   }
 
   render() {
