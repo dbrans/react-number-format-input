@@ -37,15 +37,13 @@ export default class NumberFormatInput extends Component {
         onKeyDown: this.handleKeyEvent.bind(this, 'handleKeyDown'),
         onCut: this.handleKeyEvent.bind(this, 'handleCut'),
         onPaste: this.handleKeyEvent.bind(this, 'handlePaste'),
-        onBlur() {
+        onBlur: () =>
           // Some libraries like redux-form (v3.0.2) grab the value from the blur event.
           // Intercept and pass the numeric value and not the input's string value.
-          return this.props.value;
-        },
-        onChange() {
+          this.props.value,
+        onChange: () =>
           // Changes are detected and bubbled up via key event handlers.
-          return null;
-        },
+          null,
       };
 
       Object.keys(this._eventHandlers).forEach(key => {
