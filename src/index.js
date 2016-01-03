@@ -26,6 +26,8 @@ export default class NumberFormatInput extends Component {
     if (next.preventDefault) e.preventDefault();
     if (next.stopPropagation) e.stopPropagation();
     if (next.clipboardText) e.clipboardData.setData('text', next.clipboardText);
+
+    return e;
   }
 
   eventHandlers() {
@@ -35,14 +37,22 @@ export default class NumberFormatInput extends Component {
         onKeyDown: this.handleKeyEvent.bind(this, 'handleKeyDown'),
         onCut: this.handleKeyEvent.bind(this, 'handleCut'),
         onPaste: this.handleKeyEvent.bind(this, 'handlePaste'),
-        onChange: () => {}, // Changes are detected via key events.
+        onBlur() {
+          // Some libraries like redux-form (v3.0.2) grab the value from the blur event.
+          // Intercept and pass the numeric value and not the input's string value.
+          return this.props.value;
+        },
+        onChange() {
+          // Changes are detected and bubbled up via key event handlers.
+          return null;
+        },
       };
 
       Object.keys(this._eventHandlers).forEach(key => {
         const handler = this._eventHandlers[key];
-        this._eventHandlers[key] = (...args) => {
-          handler(...args);
-          if (this.props[key]) this.props[key](...args);
+        this._eventHandlers[key] = e => {
+          const result = handler(e);
+          if (result && this.props[key]) this.props[key](result);
         };
       });
     }
@@ -82,6 +92,7 @@ NumberFormatInput.propTypes = {
     resolvedOptions: PropTypes.func.isRequired,
   }),
   onChange: PropTypes.func,
+  onBlur: PropTypes.func,
   value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 
