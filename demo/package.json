@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/dbrans/react-number-format-input",
   "dependencies": {
+    "intl": "^1.2.4",
     "react": "^0.14.0",
     "react-dom": "^0.14.0"
   },
