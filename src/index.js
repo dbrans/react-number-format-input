@@ -17,9 +17,10 @@ export default class NumberFormatInput extends Component {
     const pasteText = e.clipboardData && e.clipboardData.getData('text') || '';
     const {value: inputValue} = this.refs.input;
     const selection = getSelection(this.refs.input);
+    const { metaKey, altKey, ctrlKey } = e;
     const {maxlength, value, onChange} = this.props;
 
-    const next = this.getAbstractNumInput()[handlerName]({charCode, value: inputValue, selection, maxlength, pasteText});
+    const next = this.getAbstractNumInput()[handlerName]({charCode, metaKey, altKey, ctrlKey, value: inputValue, selection, maxlength, pasteText});
 
     if (next.value !== value) onChange(next.value);
     this.nextSelection = next.selection;
