@@ -1,6 +1,6 @@
 {
   "name": "react-number-format-input",
-  "version": "0.10.1",
+  "version": "0.11.0",
   "description": "An input for numbers formatted by Intl.NumberFormat.",
   "main": "lib/index.js",
   "jsnext:main": "src/index.js",
