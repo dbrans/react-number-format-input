@@ -4,6 +4,7 @@ import escapeRegExp from './util/escapeRegExp';
 import indexOfLastDigit from './util/indexOfLastDigit';
 import invariant from 'invariant';
 import nextPosition from './nextPosition';
+import isFinite from 'lodash.isfinite';
 
 function indexOfDigit(str, start, direction) {
   let pos = start;
@@ -51,7 +52,7 @@ export default function createAbstractNumberFormatInput(numberFormat) {
   function format(number) {
     if (number === null || number === undefined) return '';
     if (typeof number === 'string') return format(parse(number));
-    invariant(Number.isFinite(number), `Illegal number value: ${JSON.stringify(number)}`);
+    invariant(isFinite(number), `Illegal number value: ${JSON.stringify(number)}`);
     return addTrailingZeros(numberFormat.format(number));
   }
 

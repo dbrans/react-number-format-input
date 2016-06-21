@@ -1,5 +1,6 @@
 import escapeRegExp from './escapeRegExp';
 import invariant from 'invariant';
+import isFinite from 'lodash.isfinite';
 
 function assertZeroOrOneDecimalChar(str, decimalChar) {
   if (!decimalChar) return;
@@ -20,7 +21,7 @@ export default function parseNumber(formattedNumber, decimalChar) {
   invariant(numberStr.lastIndexOf('-') <= 0, `Misplaced minus sign in '${numberStr}'`);
 
   const number = parseFloat(numberStr);
-  invariant(Number.isFinite(number), `parseFloat was unable to parse '${numberStr}'`);
+  invariant(isFinite(number), `parseFloat was unable to parse '${numberStr}'`);
 
   return number;
 }
