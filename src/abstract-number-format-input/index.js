@@ -109,7 +109,7 @@ export default function createAbstractNumberFormatInput(numberFormat) {
     return {selection: {start: position, end: position}, value: nextValue, preventDefault, stopPropagation, clipboardText};
   }
 
-  function handleKeyPress({charCode, selection, value, maxlength}) {
+  function handleKeyPress({charCode, metaKey, altKey, ctrlKey, selection, value, maxlength}) {
     const {start, end} = selection;
     const char = String.fromCharCode(charCode);
     const oldValue = parse(value);
@@ -122,7 +122,7 @@ export default function createAbstractNumberFormatInput(numberFormat) {
     } else if (char.match(/\d/)) { // DIGIT
       nextValue = ensureLength(splice(value, start, end - start, char), oldValue, maxlength);
       [preventDefault, stopPropagation] = [true, true];
-    } else if (charCode === ENTER || charCode === TAB) {
+    } else if (charCode === ENTER || charCode === TAB || metaKey || altKey || ctrlKey) {
       // Allow ENTER and TAB event to do its thing on a form (submit and change focus).
       [preventDefault, stopPropagation] = [false, false];
     } else {
