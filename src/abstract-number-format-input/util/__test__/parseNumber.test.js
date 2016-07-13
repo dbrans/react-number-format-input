@@ -6,7 +6,7 @@ const defaultDecimalChar = '.';
 describe('parse', () => {
   it('throws for empty values', () => {
     ['', null, undefined].forEach(val => {
-      expect(parseNumber.bind(null, val, defaultDecimalChar)).toThrow('Invariant');
+      expect(parseNumber.bind(null, val, defaultDecimalChar)).toThrow();
     });
   });
 
@@ -51,7 +51,7 @@ describe('parse', () => {
   it('throws when magnitude is unparsable', () => {
     // TODO: '2booya2' should throw.
     ['-', '.', '-.', '3-3', '3.3-'].forEach(val => {
-      expect(parseNumber.bind(null, val, defaultDecimalChar)).toThrow('Invariant');
+      expect(parseNumber.bind(null, val, defaultDecimalChar)).toThrow();
     });
   });
 

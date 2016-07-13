@@ -20,7 +20,7 @@ describe('format', () => {
   it('Throws if value is not a finite number or string number', () => {
     // TODO: '2booya2' should throw.
     [false, '2-2', true].forEach(value => {
-      expect(simpleAllowNull.format.bind(null, value)).toThrow('Invariant');
+      expect(simpleAllowNull.format.bind(null, value)).toThrow();
     });
   });
 
