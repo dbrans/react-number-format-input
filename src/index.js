@@ -18,9 +18,9 @@ export default class NumberFormatInput extends Component {
     const {value: inputValue} = this.refs.input;
     const selection = getSelection(this.refs.input);
     const { metaKey, altKey, ctrlKey } = e;
-    const {maxlength, value, onChange} = this.props;
+    const {maxLength, value, onChange} = this.props;
 
-    const next = this.getAbstractNumInput()[handlerName]({charCode, metaKey, altKey, ctrlKey, value: inputValue, selection, maxlength, pasteText});
+    const next = this.getAbstractNumInput()[handlerName]({charCode, metaKey, altKey, ctrlKey, value: inputValue, selection, maxLength, pasteText});
 
     if (next.value !== value) onChange(next.value);
     this.nextSelection = next.selection;
@@ -59,10 +59,11 @@ export default class NumberFormatInput extends Component {
   }
 
   render() {
-    const {value, numberFormat, ...inputProps} = this.props;
-    const inputValue = this.getAbstractNumInput().format(value);
+    const {value, ...inputProps} = this.props;
+    delete inputProps.numberFormat;
+    inputProps.value = this.getAbstractNumInput().format(value);
     return (
-        <input ref="input" type="text" {...inputProps} value={inputValue} {...this.eventHandlers()}/>
+        <input ref="input" type="text" {...inputProps} {...this.eventHandlers()}/>
     );
   }
 }
@@ -74,17 +75,17 @@ NumberFormatInput.PropTypes = {
     resolvedOptions: PropTypes.func.isRequired,
   }),
   onChange: PropTypes.func,
-  maxlength: PropTypes.number,
+  maxLength: PropTypes.number,
 };
 
 NumberFormatInput.defaultProps = {
-  maxlength: undefined,
+  maxLength: undefined,
   numberFormat: new Intl.NumberFormat('en-US', {}),
   onChange: () => {},
 };
 
 NumberFormatInput.propTypes = {
-  maxlength: PropTypes.number,
+  maxLength: PropTypes.number,
   // An instance of Intl.NumberFormat.
   numberFormat: PropTypes.shape({
     format: PropTypes.func.isRequired,

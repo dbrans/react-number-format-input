@@ -114,11 +114,11 @@ describe('handleKeyPress', () => {
     });
   });
 
-  describe('maxlength', () => {
+  describe('maxLength', () => {
     it('enough room', () => {
       const {value} =
           abstractNumInput.handleKeyPress({charCode: digit(2), selection: position(0), value: '1.34',
-            maxlength: 6}); // Leave extra character for a negative.
+            maxLength: 6}); // Leave extra character for a negative.
 
       expect(value).toBe(21.34);
     });
@@ -126,7 +126,7 @@ describe('handleKeyPress', () => {
     it('not enough room if you leave room for a negative sign', () => {
       const {value} =
           abstractNumInput.handleKeyPress({charCode: digit(2), selection: position(0), value: '1.34',
-            maxlength: 5});
+            maxLength: 5});
 
       expect(value).toBe(1.34);
     });
@@ -134,7 +134,7 @@ describe('handleKeyPress', () => {
     it('not enough room but leading zero', () => {
       const {value} =
           abstractNumInput.handleKeyPress({charCode: digit(2), selection: position(2),
-            value: '-0.34', maxlength: 5});
+            value: '-0.34', maxLength: 5});
 
       expect(value).toBe(-2.34);
     });
@@ -143,7 +143,7 @@ describe('handleKeyPress', () => {
       const mySelection = {start: 1, end: 2};
       const {value} =
           abstractNumInput.handleKeyPress({charCode: digit(2), selection: mySelection, value: '-1.34',
-            maxlength: 5});
+            maxLength: 5});
 
       expect(value).toBe(-2.34);
     });

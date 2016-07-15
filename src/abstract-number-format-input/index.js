@@ -84,17 +84,17 @@ export default function createAbstractNumberFormatInput(numberFormat) {
     return -parse(formattedNumber);
   }
 
-  function ensureLength(nextValue, oldValue, maxlength) {
-    // Revert to oldValue if nextValue does not fit in input's maxlength.
+  function ensureLength(nextValue, oldValue, maxLength) {
+    // Revert to oldValue if nextValue does not fit in input's maxLength.
     // We force nextValue to be negative to ensure there's always room for a minus sign.
-    return format(-Math.abs(nextValue)).length > maxlength ? oldValue : nextValue;
+    return format(-Math.abs(nextValue)).length > maxLength ? oldValue : nextValue;
   }
 
   // TODO(dbrans): Needs tests.
-  function handlePaste({pasteText, selection, value, maxlength}) {
+  function handlePaste({pasteText, selection, value, maxLength}) {
     const {start, end} = selection;
     const [preventDefault, stopPropagation] = [true, true];
-    const nextValue = ensureLength(splice(value, start, end - start, pasteText), parse(value), maxlength);
+    const nextValue = ensureLength(splice(value, start, end - start, pasteText), parse(value), maxLength);
     const position = nextPosition({start, end}, value, format(nextValue));
     return {selection: {start: position, end: position}, value: nextValue, preventDefault, stopPropagation};
   }
@@ -109,7 +109,7 @@ export default function createAbstractNumberFormatInput(numberFormat) {
     return {selection: {start: position, end: position}, value: nextValue, preventDefault, stopPropagation, clipboardText};
   }
 
-  function handleKeyPress({charCode, metaKey, altKey, ctrlKey, selection, value, maxlength}) {
+  function handleKeyPress({charCode, metaKey, altKey, ctrlKey, selection, value, maxLength}) {
     const {start, end} = selection;
     const char = String.fromCharCode(charCode);
     const oldValue = parse(value);
@@ -120,7 +120,7 @@ export default function createAbstractNumberFormatInput(numberFormat) {
       if (char === '-' || char === '+' && isNegative(value)) nextValue = flipSign(value);
       [preventDefault, stopPropagation] = [true, true];
     } else if (char.match(/\d/)) { // DIGIT
-      nextValue = ensureLength(splice(value, start, end - start, char), oldValue, maxlength);
+      nextValue = ensureLength(splice(value, start, end - start, char), oldValue, maxLength);
       [preventDefault, stopPropagation] = [true, true];
     } else if (charCode === ENTER || charCode === TAB || metaKey || altKey || ctrlKey) {
       // Allow ENTER and TAB event to do its thing on a form (submit and change focus).
