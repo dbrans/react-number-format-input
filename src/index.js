@@ -51,7 +51,7 @@ export default class NumberFormatInput extends Component {
         const handler = this._eventHandlers[key];
         this._eventHandlers[key] = e => {
           const result = handler(e);
-          if (result && this.props[key]) this.props[key](result);
+          this.props[key] && this.props[key](result);
         };
       });
     }
@@ -95,4 +95,3 @@ NumberFormatInput.propTypes = {
   onBlur: PropTypes.func,
   value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
-
